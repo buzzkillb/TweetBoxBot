@@ -13,9 +13,10 @@
 #                                                      #
 # **************************************************** #
 
-import urllib, urlparse, json, random, os, time, sys
+import urllib, urlparse, json, random, os, time, sys, requests
 
 from twython import Twython
+from denariusrpc.authproxy import AuthServiceProxy, JSONRPCException
 
 
 # **************************************** #
@@ -385,6 +386,77 @@ def breakingbadquote():
 
     return content, media;
 
+# Denarius wallet version
+def walletversion():
+    rpc_connection = AuthServiceProxy("http://%s:%s@127.0.0.1:32369"%("user", "password"))
+    walletversion = rpc_connection.getinfo()
+    print "Daemon Version:", (walletversion[u'version'])    
+    content = "My #denarius snap wallet is version "+(walletversion[u'version'])
+    media = ""
+
+    return content, media;
+
+# Denarius staking weight
+def mystakeweight():
+    rpc_connection = AuthServiceProxy("http://%s:%s@127.0.0.1:32369"%("user", "password"))
+    mystakeweight = rpc_connection.getstakinginfo()
+    print "Net Stake Weight:", (mystakeweight[u'netstakeweight'])
+    print "StakeWeight:", (mystakeweight[u'weight'])
+    content = "My $D staking weight is "+str(mystakeweight[u'weight']) +" out of a " +str(mystakeweight[u'netstakeweight']) +" network total."
+    media = ""
+
+    return content, media;
+
+# Denarius supply
+def supply():
+    rpc_connection = AuthServiceProxy("http://%s:%s@127.0.0.1:32369"%("user", "passsword"))
+    supply = rpc_connection.getblockchaininfo()
+    print "circulating:", (supply[u'moneysupply'])
+    get_block_count = rpc_connection.getblockcount()
+    print "Block Height:", (get_block_count)
+    content = "There is currently "+str(supply[u'moneysupply']) +" #Denarius circulating at block height " +str(get_block_count) +"."
+    media = ""
+
+    return content, media;
+
+# Denarius peers
+def peers():
+    rpc_connection = AuthServiceProxy("http://%s:%s@127.0.0.1:32369"%("user", "password"))
+    peers = rpc_connection.getinfo()
+    print "peers:", (peers[u'connections'])
+    content = "I am currently connected to "+str(peers[u'connections']) +" peers on the #Denarius #blockchain."
+    media = ""
+
+    return content, media;
+
+# Denarius difficulty
+def difficulty():
+    rpc_connection = AuthServiceProxy("http://%s:%s@127.0.0.1:32369"%("user", "password"))
+    difficulty = rpc_connection.getmininginfo()
+    print "pos:", (difficulty[u'difficulty'][u'proof-of-stake'])
+    content = "Denarius #blockchain current Proof of Stake difficulty is "+str(difficulty[u'difficulty'][u'proof-of-stake']) +" and Proof of Work difficulty is "+str(difficulty[u'difficulty'][u'proof-of-wor$
+    media = ""
+
+    return content, media;
+
+# Denarius nethash
+def nethash():
+    rpc_connection = AuthServiceProxy("http://%s:%s@127.0.0.1:32369"%("user", "password"))
+    nethash = rpc_connection.getmininginfo()
+    print "nethash:", (nethash[u'netmhashps'])
+    content = "$D #blockchain current nethash is "+str(nethash[u'netmhashps']) +" Mh/s."
+    media = ""
+
+    return content, media;
+
+# Denarius nethash
+def unnamed():
+    unnameddata = requests.get('https://api.unnamed.exchange/v1/Public/Ticker?market=D_BTC').json()
+    content = str(unnameddata['volume']) +" $D was traded on " +str(unnameddata['baseVolume']) +" $BTC volume at https://www.unnamed.exchange/Exchange?market=D_BTC" 
+    media = ""
+
+    return content, media;
+
 
 # Debug log
 if DEBUG is True:
@@ -394,6 +466,13 @@ if DEBUG is True:
 
 # Available functions. You can remove or comment some if you want (the last item has no ",")
 options = [
+    "unnamed",
+    "nethash",
+    "difficulty",
+    "peers",
+    "supply",
+    "walletversion",
+    "mystakeweight",
     "uptime", 
     "cpu_load", 
     "cpu_freq", 
